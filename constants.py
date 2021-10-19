@@ -1,0 +1,19 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Oct 14 22:49:26 2021
+
+@author: PeanutFlake
+"""
+
+# Colors
+COLOR_WHITE = (255, 255, 255)
+COLOR_BLACK = (0, 0, 0)
+COLOR_RED = (255, 0, 0)
+COLOR_RED_LIGHT = (128, 0, 0)
+COLOR_GREEN = (0, 255, 0)
+COLOR_GREEN_LIGHT = (0, 128, 0)
+COLOR_BLUE = (0, 0, 255)
+COLOR_BLUE_LIGHT = (0, 0, 128)
+COLOR_VIOLET = (255, 0, 255)
+COLOR_VIOLET_LIGHT = (128, 0, 128)
+COLOR_GREY_LIGHT = (229, 229, 229)
