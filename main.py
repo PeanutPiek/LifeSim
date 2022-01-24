@@ -5,92 +5,51 @@ Spyder Editor
 This is a temporary script file.
 """
 
-import pygame
-from pygame.locals import QUIT
+from game import Game
+from world import *
+import sys
 
-import sys, random
+#################################
+#                               #
+# Define Initial Parameters.    #
+#                               #
+#################################
 
-from constants import COLOR_WHITE
-from units import Male, Female
-
-from world import World
-
-# Window Size
-SCREEN_WIDTH = 100
-SCREEN_HEIGHT = 100
-
-# Frames per Second
+# Frames per Second to calculate, depends on system performance and results in game speed
 FPS = 30
 
-# Initial Count of Entities
-COUNT_OF_ENTITIES = 10
+# Window Size
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
 
+# Initial Count of Entities, Entities will supposed to be generated ~50/50 as Male/Female
+COUNT_OF_ENTITIES = 0
 
+TILESIZE = (10,10)
 
-# Initialize List of Entities
-def init_entities(world, n, border = 10):
-    for i in range(n):
-        e = None
-        # 50:50 distribution of Genders
-        if random.randint(0, 1) == 1:
-            e = Male(world)
-        else:
-            e = Female(world)
-        # Calculate Position to spawn
-        pos = (random.randint(border, SCREEN_WIDTH - border), random.randint(border, SCREEN_HEIGHT - border))
-        # Set Position of Entity
-        e.move_to(pos)
-        # Add Entity to World
-        world.add_entity(e)   
+# Define Map Generator
+#gen = FlatMapGenerator(tile_size=TILESIZE)
+gen = DSMapGenerator(min_height=-5, max_height=10, roughness=0.25, tile_size=TILESIZE)
 
-# Update Entities. Do Entity Logic and redraw.
-def update_entities(entities, surface):
-    for e in entities:
-        task = e.get_current_task()
-        if task is None:
-            # If no active Task is handeled
-            # Try pass next Task in Queue as new active Task
-            task = e.find_next_task()
-            e.solve(task)
-        else:
-            # If active Task is handeled
-            # Do next solving step
-            e.solve()
-            
-        e.draw(surface)
+# Create World
+world = World(size=(SCREEN_WIDTH,SCREEN_HEIGHT), border=(10,10), tileSize=TILESIZE, mapgen=gen)
 
-FramePerSec = pygame.time.Clock();
+# Create Game Instance
+game = Game(world=world, tickCount=FPS)
 
-pygame.init()
-# Setup Window
-DISPLAYSURF = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT));
-DISPLAYSURF.fill(COLOR_WHITE)
-# Set Window Title
-pygame.display.set_caption("LifeSim")
+print("Initialize Game.")
+game.init()
+# Game is initialized, lets spawn some Entities
+for i in range(COUNT_OF_ENTITIES):
+    world.create_random_entity(min_age=15)
 
-# Setup World
-w = World((SCREEN_WIDTH, SCREEN_HEIGHT))
-w.generate()
-# List of Entities in Game
-init_entities(w, COUNT_OF_ENTITIES)
-
-# Main Loop
-active = True
-while active:    
-    # Check Events
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            active = False;
-    # Update Display
-    pygame.display.update()
-    # Redraw Background
-    DISPLAYSURF.fill(COLOR_WHITE)        
-    #w.draw(DISPLAYSURF, (SCREEN_WIDTH, SCREEN_HEIGHT))
-    # Update Entities of World
-    update_entities(w.entities, DISPLAYSURF)
-    # Update Clock
-    FramePerSec.tick(FPS)
-    
-# Quit
-pygame.quit()
+print("Start Game.")
+game.run()
+# Game blocks while running, next Line will be called after Game stops running
+print("Terminate Game.")
+# Clear Game
+game.dispose()
+print("Game is closed, bye.")
+# Exit Program
 sys.exit()
+
