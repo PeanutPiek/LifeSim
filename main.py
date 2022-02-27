@@ -23,7 +23,7 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
 # Initial Count of Entities, Entities will supposed to be generated ~50/50 as Male/Female
-COUNT_OF_ENTITIES = 0
+COUNT_OF_ENTITIES = 10
 
 TILESIZE = (10,10)
 
