@@ -17,15 +17,14 @@ class IdleMoveStrategy(Strategy):
         self.dist = random.randint(distance_min, distance_max)
         self.target = None
         
-    def move_idle(self, world, entity, range=1):
-        if not entity.moves():
-            v = Vector(random.randint(-1 * range, 1 * range),random.randint(-1 * range, 1 * range))
-            entity.step(v)
+    def move_idle(self, world, entity, r=1):
+        v = Vector(random.randint(-1 * r, 1 * r),random.randint(-1 * r, 1 * r))
+        entity.step(v)
         return v
         
     def apply(self, world, task, entity):
         if self.target is None:
-            self.target = self.move_idle(world, entity, range=self.dist)
+            self.target = self.move_idle(world, entity, r=self.dist)
         else:
             if entity.moves():
                 entity.move(world)
@@ -37,18 +36,16 @@ class IdleMoveStrategy(Strategy):
 class InRangeIdleMoveStrategy(IdleMoveStrategy):
     def __init__(self, target=None, max_distance=0, move_idle_min=1, move_idle_max=1):
         super().__init__(distance_min=move_idle_min,distance_max=move_idle_max)
-        self.target = target
+        self.target_to = target
         self.distance = max_distance
+        self.moves = False
 
     def apply(self, world, task, entity):
-        if self.moves == True:
-            super(InRangeIdleMoveStrategy, self).apply(world, task, entity)
-        else:
-            if not entity.moves():
-                if entity.in_range(self.target, self.distance):
-                    super(InRangeIdleMoveStrategy, self).apply(world, task, entity)
-                else:
-                    entity.step_to(self.target.position())
+        if not entity.moves():
+            if entity.in_range(self.target_to, self.distance):
+                super(InRangeIdleMoveStrategy, self).apply(world, task, entity)
             else:
-                entity.move(world)
-                task.done = entity.in_range(self.target, self.distance)
+                entity.step_to(self.target_to.position())
+        else:
+            entity.move(world)
+            task.done = entity.in_range(self.target_to, self.distance)
