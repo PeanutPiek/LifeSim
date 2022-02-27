@@ -24,11 +24,12 @@ SCREEN_HEIGHT = 600
 
 # Initial Count of Entities, Entities will supposed to be generated ~50/50 as Male/Female
 COUNT_OF_ENTITIES = 100
-
+# Size of Tiles in generated Map
 TILESIZE = (10,10)
-
 # Define Map Generator
+# Empty/Flat World
 #gen = FlatMapGenerator(tile_size=TILESIZE)
+# Generated World on Heightmap
 gen = DSMapGenerator(min_height=-5, max_height=10, roughness=0.25, tile_size=TILESIZE)
 
 # Create World
