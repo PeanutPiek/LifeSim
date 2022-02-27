@@ -122,12 +122,12 @@ class EntityInfoPanel(GUIComponent):
         self.ui_element.visible = True
         
         self.healthBar.visible = True
-        self.healthLabel.set_text("{v}".format(v=entity.lifepoints))
+        self.healthLabel.set_text("{v}".format(v=round(entity.lifepoints, ndigits=2)))
         self.healthLabel.rebuild()
         self.healthLabel.visible = True
         
         self.energyBar.visible = True
-        self.energyLabel.set_text("{v}".format(v=entity.energy))
+        self.energyLabel.set_text("{v}".format(v=round(entity.energy, ndigits=2)))
         self.energyLabel.rebuild()
         self.energyLabel.visible = True
         
