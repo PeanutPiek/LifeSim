@@ -89,24 +89,29 @@ class EntityInfoPanel(GUIComponent):
         x = self.ui_element.relative_rect.x + origin[0]
         y = self.ui_element.relative_rect.y + origin[1]
         
-        y += 80
+        y += 25
         self.healthBar = pygame_gui.elements.UIPanel( \
                              relative_rect=pygame.Rect((x, y), (190, 20)), \
                              starting_layer_height=2, parent_element=self.ui_element, manager=manager, visible=False)
-        self.healthLabel = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((x, y), (190, 20)), \
+        self.healthLabel = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((x, y+15), (190, 20)), \
                                                        text="0", parent_element=self.healthBar, manager=manager, visible=False)
         self.energyBar = pygame_gui.elements.UIPanel( \
-                             relative_rect=pygame.Rect((x, y + 25), (190, 20)), \
+                             relative_rect=pygame.Rect((x, y + 15 + 25), (190, 20)), \
                              starting_layer_height=2, parent_element=self.ui_element, manager=manager, visible=False)
-        self.energyLabel = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((x, y), (190, 20)), \
+        self.energyLabel = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((x, y + 40 + 15), (190, 20)), \
                                                        text="0", parent_element=self.energyBar, manager=manager, visible=False)
+        self.taskInfo = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((x, y + 55 + 15), (190, 20)), \
+                                                    text="No Task", parent_element=self.ui_element, manager=manager, visible=False)
         self.on_mouse_click = self._mouse_click
 
     def _mouse_click(self, pos):
-        clicked_entities = [e for e in self.world.entities if e.rect.collidepoint(pos)]
+        # Offset for clickable Area around an Entity to show InfoPanel
+        off = 5
+        clicked_entities = [e for e in self.world.entities if e.rect.colliderect(pygame.Rect(pos[0]-off, pos[1]-off, 2*off, 2*off))]
         # If there are Entities clicked
         if len(clicked_entities) > 0:
             # Show Info for first clicked Entity
+            # If multiple Entities are in Offset Area of Click, only the first Entity (maybe random) will be displayed.
             self.show(clicked_entities[0])
         else:
             self.hide()
@@ -115,13 +120,27 @@ class EntityInfoPanel(GUIComponent):
     def show(self, entity : Entity):
         
         self.ui_element.visible = True
+        
         self.healthBar.visible = True
         self.healthLabel.set_text("{v}".format(v=entity.lifepoints))
         self.healthLabel.rebuild()
         self.healthLabel.visible = True
+        
         self.energyBar.visible = True
         self.energyLabel.set_text("{v}".format(v=entity.energy))
         self.energyLabel.rebuild()
+        self.energyLabel.visible = True
+        
+        if entity.current_task is not None:
+            tstr = str(type(entity.current_task.strategy))
+            tsub = tstr[tstr.index('.')+1:]
+            tstr = tsub[:tsub.index("'")]
+            self.taskInfo.set_text("{v}".format(v=tstr))
+        else:
+            self.taskInfo.set_text("No Task")
+        self.taskInfo.rebuild();
+        self.taskInfo.visible = True
+        
         self.energyLabel.visible = True
         
     def hide(self):
@@ -130,3 +149,4 @@ class EntityInfoPanel(GUIComponent):
         self.healthBar.visible = False
         self.energyLabel.visible = False
         self.energyBar.visible = False
+        self.taskInfo.visible = False
